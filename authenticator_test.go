@@ -54,7 +54,7 @@ var (
 
 func runTest(secretKeys Secrets, headers []string, v []validator.Validator, req *http.Request) *gin.Context {
 	gin.SetMode(gin.TestMode)
-	auth := NewAuthenticator(secretKeys, WithRequiredHeaders(headers), WithValidator(v))
+	auth := NewAuthenticator(secretKeys, WithRequiredHeaders(headers), WithValidator(v...))
 	c, _ := gin.CreateTestContext(httptest.NewRecorder())
 	c.Request = req
 	auth.Authenticated()(c)
@@ -173,7 +173,7 @@ func TestHttpInvalidRequest(t *testing.T) {
 	gin.SetMode(gin.TestMode)
 
 	r := gin.Default()
-	auth := NewAuthenticator(secrets, WithValidator(mockValidator))
+	auth := NewAuthenticator(secrets, WithValidator(mockValidator...))
 	r.Use(auth.Authenticated())
 	r.GET("/", httpTestGet)
 
@@ -193,7 +193,7 @@ func TestHttpInvalidDigest(t *testing.T) {
 	gin.SetMode(gin.TestMode)
 
 	r := gin.Default()
-	auth := NewAuthenticator(secrets, WithValidator(mockValidator))
+	auth := NewAuthenticator(secrets, WithValidator(mockValidator...))
 	r.Use(auth.Authenticated())
 	r.POST("/", httpTestPost)
 
@@ -214,7 +214,7 @@ func TestHttpValidRequest(t *testing.T) {
 	gin.SetMode(gin.TestMode)
 
 	r := gin.Default()
-	auth := NewAuthenticator(secrets, WithValidator(mockValidator))
+	auth := NewAuthenticator(secrets, WithValidator(mockValidator...))
 	r.Use(auth.Authenticated())
 	r.GET("/", httpTestGet)
 
@@ -234,7 +234,7 @@ func TestHttpValidRequestBody(t *testing.T) {
 	gin.SetMode(gin.TestMode)
 
 	r := gin.Default()
-	auth := NewAuthenticator(secrets, WithValidator(mockValidator))
+	auth := NewAuthenticator(secrets, WithValidator(mockValidator...))
 	r.Use(auth.Authenticated())
 	r.POST("/", httpTestPost)
 
@@ -258,7 +258,7 @@ func TestHttpValidRequestHost(t *testing.T) {
 	gin.SetMode(gin.TestMode)
 
 	r := gin.Default()
-	auth := NewAuthenticator(secrets, WithValidator(mockValidator))
+	auth := NewAuthenticator(secrets, WithValidator(mockValidator...))
 	r.Use(auth.Authenticated())
 	r.POST("/", httpTestPost)
 

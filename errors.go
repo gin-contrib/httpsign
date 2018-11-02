@@ -7,14 +7,14 @@ import (
 var (
 	//ErrInvalidAuthorizationHeader error when get invalid format of Authorization header
 	ErrInvalidAuthorizationHeader = errors.New("Authorization header format is incorrect")
-	//ErrInvalidKeyID error when KeyID in header is not provided
+	//ErrInvalidKeyID error when KeyID in header does not provided
 	ErrInvalidKeyID = errors.New("Invalid keyId")
 	//ErrDateNotFound error when no date in header
 	ErrDateNotFound = errors.New("There is no Date on Headers")
-	//ErrIncorrectAlgorithm error when Algorithm in header is not match with secret key
-	ErrIncorrectAlgorithm = errors.New("Algorithm is not match")
+	//ErrIncorrectAlgorithm error when Algorithm in header does not match with secret key
+	ErrIncorrectAlgorithm = errors.New("Algorithm does not match")
 	//ErrHeaderNotEnough error when requiremts header do not appear on heder field
-	ErrHeaderNotEnough = errors.New("Header feild is not match requirement")
+	ErrHeaderNotEnough = errors.New("Header field is not match requirement")
 	// ErrNoSignature error when no Signature not found in header
 	ErrNoSignature = errors.New("No Signature header found in request")
 	//ErrInvalidSign error when signing string do not match

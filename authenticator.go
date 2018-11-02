@@ -31,8 +31,8 @@ type Authenticator struct {
 type Option func(*Authenticator)
 
 // WithValidator configures the Authenticator to use custom validator.
-// The default validator is timestamp based.
-func WithValidator(validators []validator.Validator) Option {
+// The default validators are time based and digest.
+func WithValidator(validators ...validator.Validator) Option {
 	return func(a *Authenticator) {
 		a.validators = validators
 	}

@@ -73,7 +73,7 @@ func TestAuthenticatedHeaderNoSignature(t *testing.T) {
 	require.NoError(t, err)
 	c := runTest(secrets, requiredHeaders, nil, req)
 	assert.Equal(t, http.StatusUnauthorized, c.Writer.Status())
-	assert.Equal(t, c.Errors[0].Err, ErrNoSignature)
+	assert.Equal(t, ErrNoSignature, c.Errors[0])
 }
 
 func TestAuthenticatedHeaderInvalidSignature(t *testing.T) {
@@ -82,7 +82,7 @@ func TestAuthenticatedHeaderInvalidSignature(t *testing.T) {
 	req.Header.Set(authorizationHeader, "hello")
 	c := runTest(secrets, requiredHeaders, nil, req)
 	assert.Equal(t, http.StatusUnauthorized, c.Writer.Status())
-	assert.Equal(t, ErrInvalidAuthorizationHeader, c.Errors[0].Err)
+	assert.Equal(t, ErrInvalidAuthorizationHeader, c.Errors[0])
 }
 
 func TestAuthenticatedHeaderWrongKey(t *testing.T) {
@@ -93,7 +93,7 @@ func TestAuthenticatedHeaderWrongKey(t *testing.T) {
 	req.Header.Set("Date", time.Now().UTC().Format(http.TimeFormat))
 	c := runTest(secrets, requiredHeaders, nil, req)
 	assert.Equal(t, http.StatusBadRequest, c.Writer.Status())
-	assert.Equal(t, ErrInvalidKeyID, c.Errors[0].Err)
+	assert.Equal(t, ErrInvalidKeyID, c.Errors[0])
 }
 
 func TestAuthenticateDateNotAccept(t *testing.T) {
@@ -104,7 +104,7 @@ func TestAuthenticateDateNotAccept(t *testing.T) {
 	req.Header.Set("Date", time.Date(1990, time.October, 20, 0, 0, 0, 0, time.UTC).Format(http.TimeFormat))
 	c := runTest(secrets, requiredHeaders, nil, req)
 	assert.Equal(t, http.StatusBadRequest, c.Writer.Status())
-	assert.Equal(t, validator.ErrDateNotInRange, c.Errors[0].Err)
+	assert.Equal(t, validator.ErrDateNotInRange, c.Errors[0])
 }
 
 func TestAuthenticateInvalidRequiredHeader(t *testing.T) {
@@ -118,7 +118,7 @@ func TestAuthenticateInvalidRequiredHeader(t *testing.T) {
 
 	c := runTest(secrets, requiredHeaders, nil, req)
 	assert.Equal(t, http.StatusBadRequest, c.Writer.Status())
-	assert.Equal(t, ErrHeaderNotEnough, c.Errors[0].Err)
+	assert.Equal(t, ErrHeaderNotEnough, c.Errors[0])
 }
 
 func TestAuthenticateInvalidAlgo(t *testing.T) {
@@ -130,7 +130,7 @@ func TestAuthenticateInvalidAlgo(t *testing.T) {
 
 	c := runTest(secrets, requiredHeaders, nil, req)
 	assert.Equal(t, http.StatusBadRequest, c.Writer.Status())
-	assert.Equal(t, ErrIncorrectAlgorithm, c.Errors[0].Err)
+	assert.Equal(t, ErrIncorrectAlgorithm, c.Errors[0])
 }
 
 func TestInvalidSign(t *testing.T) {
@@ -142,7 +142,7 @@ func TestInvalidSign(t *testing.T) {
 
 	c := runTest(secrets, requiredHeaders, nil, req)
 	assert.Equal(t, http.StatusUnauthorized, c.Writer.Status())
-	assert.Equal(t, c.Errors[0].Err, ErrInvalidSign)
+	assert.Equal(t, ErrInvalidSign, c.Errors[0])
 }
 
 // mock interface always return true

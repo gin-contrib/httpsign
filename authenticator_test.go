@@ -7,6 +7,7 @@ import (
 	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
+	"reflect"
 	"strings"
 	"testing"
 	"time"
@@ -35,15 +36,17 @@ const (
 )
 
 var (
-	hmacsha512 = &crypto.HmacSha512{}
-	secrets    = Secrets{
-		readID: &Secret{
-			Key:       "1234",
-			Algorithm: hmacsha512,
-		},
-		writeID: &Secret{
-			Key:       "5678",
-			Algorithm: hmacsha512,
+	hmacsha512        = &crypto.HmacSha512{}
+	secrets = Secrets{
+		Keys: map[KeyID]*Secret{
+			readID: &Secret{
+				Key:       "1234",
+				Algorithm: hmacsha512,
+			},
+			writeID: &Secret{
+				Key:       "5678",
+				Algorithm: hmacsha512,
+			},
 		},
 	}
 	requiredHeaders = []string{"(request-target)", "date", "digest"}
@@ -277,4 +280,103 @@ func TestHttpValidRequestHost(t *testing.T) {
 	body, err := ioutil.ReadAll(w.Result().Body)
 	assert.NoError(t, err)
 	assert.Equal(t, body, []byte(sampleBodyContent))
+}
+
+func TestAuthenticatorGetSecret(t *testing.T) {
+	type fields struct {
+		secrets    Secrets
+		validators []validator.Validator
+		headers    []string
+	}
+	type args struct {
+		keyID     KeyID
+		algorithm string
+	}
+	tests := []struct {
+		name    string
+		fields  fields
+		args    args
+		want    *Secret
+		wantErr bool
+	}{
+		{
+			name:   "Get secret by KeyID from map",
+			fields: fields{
+				secrets: Secrets{
+					Keys: map[KeyID]*Secret{
+						readID: &Secret{
+							Key:       "1234",
+							Algorithm: hmacsha512,
+						},
+						writeID: &Secret{
+							Key:       "5678",
+							Algorithm: hmacsha512,
+						},
+					},
+				},
+			},
+			args: args{
+				keyID:     readID,
+				algorithm: algoHmacSha512,
+			},
+			want: &Secret{
+				Key:       "1234",
+				Algorithm: hmacsha512,
+			},
+			wantErr: false,
+		},
+		{
+			name:   "Get secret by KeyID from Getter func",
+			fields: fields{
+				secrets: Secrets{
+					Keys: map[KeyID]*Secret{},
+					Get: func(id KeyID) (secret *Secret, b bool) {
+						localKeys := map[KeyID]*Secret{
+							readID: &Secret{
+								Key:       "1234",
+								Algorithm: hmacsha512,
+							},
+							writeID: &Secret{
+								Key:       "5678",
+								Algorithm: hmacsha512,
+							},
+						}
+
+						secret, ok := localKeys[id]
+						if !ok {
+							return &Secret{}, false
+						}
+
+						return secret, true
+					},
+				},
+			},
+			args: args{
+				keyID:     writeID,
+				algorithm: algoHmacSha512,
+			},
+			want: &Secret{
+				Key:       "5678",
+				Algorithm: hmacsha512,
+			},
+			wantErr: false,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			a := &Authenticator{
+				secrets:    tt.fields.secrets,
+				validators: tt.fields.validators,
+				headers:    tt.fields.headers,
+			}
+			got, err := a.getSecret(tt.args.keyID, tt.args.algorithm)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("getSecret() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+			if !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("getSecret() got = %v, want %v", got, tt.want)
+			}
+		})
+	}
 }

@@ -127,7 +127,13 @@ func (a *Authenticator) isValidHeader(headers []string) bool {
 }
 
 func (a *Authenticator) getSecret(keyID KeyID, algorithm string) (*Secret, error) {
-	secret, ok := a.secrets[keyID]
+	var secret *Secret
+	var ok bool
+	if a.secrets.Get != nil {
+		secret, ok = a.secrets.Get(keyID)
+	} else {
+		secret, ok = a.secrets.Keys[keyID]
+	}
 	if !ok {
 		return nil, ErrInvalidKeyID
 	}

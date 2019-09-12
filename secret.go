@@ -11,5 +11,11 @@ type Secret struct {
 	Algorithm crypto.Crypto
 }
 
+// Secrets getter function signature
+type Handler = func(id KeyID) (*Secret, bool)
+
 // Secrets map with keyID and secret
-type Secrets map[KeyID]*Secret
+type Secrets struct {
+	Keys map[KeyID]*Secret
+	Get  Handler
+}

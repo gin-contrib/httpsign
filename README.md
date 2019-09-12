@@ -8,7 +8,7 @@
 
 Signing HTTP Messages Middleware base on [HTTP Signatures](https://tools.ietf.org/html/draft-cavage-http-signatures).
 
-## Example
+## Example 1. Secret keys from map
 ``` go
 
 package main
@@ -50,5 +50,47 @@ func main() {
 
 	r.Run(":8080")
 }
+
+```
+
+## Example 2. Secret keys from custom Getter
+``` go
+
+package main
+
+import (
+    "github.com/gin-contrib/httpsign"
+	"github.com/gin-contrib/httpsign/crypto"
+	"github.com/gin-gonic/gin"
+)
+
+func main() {
+
+	secrets := httpsign.Secrets{
+		Get: func(id httpsign.KeyID) (*httpsign.Secret, bool) {
+			// Retrieve SecretKey from DB
+			// Set secret struct and return
+			secret := &httpsign.Secret{
+				Key:       "12345",
+				Algorithm: &crypto.HmacSha512{},
+			}
+			return secret, true
+		},
+	}
+
+	// Init server
+	r := gin.Default()
+
+	//Create middleware with default rule. Could modify by parse Option func
+	auth := httpsign.NewAuthenticator(secrets)
+
+	r.Use(auth.Authenticated())
+	r.GET("/a", func(context *gin.Context) {})
+	r.POST("/b", func(context *gin.Context) {})
+	r.POST("/c", func(context *gin.Context) {})
+
+	r.Run(":8080")
+}
+
 
 ```

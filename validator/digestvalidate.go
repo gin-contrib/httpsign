@@ -6,6 +6,7 @@ import (
 	"encoding/base64"
 	"errors"
 	"fmt"
+	"github.com/gin-gonic/gin"
 	"io/ioutil"
 	"net/http"
 )
@@ -13,7 +14,10 @@ import (
 //TODO: support more digest
 
 //ErrInvalidDigest error when sha256 of body do not match with submitted digest
-var ErrInvalidDigest = errors.New("Sha256 of body is not match with digest")
+var ErrInvalidDigest = &gin.Error{
+	Err:  errors.New("Sha256 of body is not match with digest"),
+	Type: gin.ErrorTypePublic,
+}
 
 // DigestValidator checking digest in header match body
 type DigestValidator struct {

@@ -9,7 +9,7 @@ import (
 const maxTimeGap = 30 * time.Second // 30 secs
 
 //ErrDateNotInRange error when date not in aceptable range
-var ErrDateNotInRange = errors.New("Date submit is not in aceptable range")
+var ErrDateNotInRange = errors.New("submitted Date header is not in acceptable range")
 
 // DateValidator checking validate by time range
 type DateValidator struct {

@@ -58,7 +58,7 @@ func (p *parser) nextParam() (string, string, error) {
 			if !keyParsed {
 				return "", "", ErrMisingEqualCharacter
 			}
-			if p.peekChar() != ',' && p.peekChar() != 0 {
+			if p.peekChar() != ',' && p.peekChar() != 0 && p.peekChar() != ' ' {
 				if err := val.WriteByte(p.ch); err != nil {
 					return "", "", err
 				}
@@ -69,6 +69,9 @@ func (p *parser) nextParam() (string, string, error) {
 		case '=':
 			if !keyParsed {
 				p.readChar()
+				for p.ch == ' ' {
+					p.readChar()
+				}
 				if p.ch != '"' {
 					return "", "", ErrMisingDoubleQuote
 				}
@@ -81,10 +84,14 @@ func (p *parser) nextParam() (string, string, error) {
 			p.readChar()
 		default:
 			if !keyParsed {
+				if p.ch == ' ' {
+					p.readChar()
+					continue
+				}
 				if err := key.WriteByte(p.ch); err != nil {
 					return "", "", err
 				}
-			} else {
+			} else if !valParsed {
 				if err := val.WriteByte(p.ch); err != nil {
 					return "", "", err
 				}

@@ -2,14 +2,23 @@ package validator
 
 import (
 	"errors"
+	"fmt"
+	"github.com/gin-gonic/gin"
 	"net/http"
 	"time"
 )
 
 const maxTimeGap = 30 * time.Second // 30 secs
 
+func newPublicError(msg string) *gin.Error {
+	return &gin.Error{
+		Err:  errors.New(msg),
+		Type: gin.ErrorTypePublic,
+	}
+}
+
 //ErrDateNotInRange error when date not in aceptable range
-var ErrDateNotInRange = errors.New("submitted Date header is not in acceptable range")
+var ErrDateNotInRange = newPublicError("submitted Date header is not in acceptable range")
 
 // DateValidator checking validate by time range
 type DateValidator struct {
@@ -29,7 +38,7 @@ func NewDateValidator() *DateValidator {
 func (v *DateValidator) Validate(r *http.Request) error {
 	t, err := http.ParseTime(r.Header.Get("date"))
 	if err != nil {
-		return err
+		return newPublicError(fmt.Sprintf("Could not parse date header. Error: %s", err.Error()))
 	}
 	serverTime := time.Now()
 	start := serverTime.Add(-v.TimeGap)

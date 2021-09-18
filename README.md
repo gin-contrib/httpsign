@@ -1,5 +1,6 @@
 # httpsign
 
+[![Run Tests](https://github.com/gin-contrib/httpsign/actions/workflows/go.yml/badge.svg)](https://github.com/gin-contrib/httpsign/actions/workflows/go.yml)
 [![codecov](https://codecov.io/gh/gin-contrib/httpsign/branch/master/graph/badge.svg)](https://codecov.io/gh/gin-contrib/httpsign)
 [![Go Report Card](https://goreportcard.com/badge/github.com/gin-contrib/httpsign)](https://goreportcard.com/report/github.com/gin-contrib/httpsign)
 [![GoDoc](https://godoc.org/github.com/gin-contrib/httpsign?status.svg)](https://godoc.org/github.com/gin-contrib/httpsign)

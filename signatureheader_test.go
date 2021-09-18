@@ -1,9 +1,7 @@
 package httpsign
 
 import (
-	"fmt"
 	"net/http"
-	"strings"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -11,16 +9,8 @@ import (
 )
 
 const (
-	sampleKeyID            = "rsa-key-1"
-	sampleAlgorithm        = "rsa-sha256"
-	sampleSignature        = "70AaN3BDO0XC9QbtgksgCy2jJvmOvshq8VmjSthdXC+sgcgrKrl9WME4DbZv4W7UZKElvCemhDLHQ1Nln9GMkQ=="
-	sampleBodyContent      = "hello world"
-	invalidSignatureString = "Signature keyId=\"rsa-key-1\",algorithm,headers=\"(request-target) host date digest \",signature=\"Hello world\""
+	sampleBodyContent = "hello world"
 )
-
-var sampleHeader = []string{"(request-target)", "date", "digest"}
-var sampleSignatureString = fmt.Sprintf("Signature keyId=\"%s\",algorithm=\"%s\",headers=\"%s\",signature=\"%s\"",
-	sampleKeyID, sampleAlgorithm, strings.Join(sampleHeader, " "), sampleSignature)
 
 func newAuthorizationHeader(s string) http.Header {
 	return http.Header{
@@ -35,7 +25,7 @@ func newSignatureHeader(s string) http.Header {
 }
 
 func TestFromSignatureString(t *testing.T) {
-	var tests = []struct {
+	tests := []struct {
 		name      string
 		header    http.Header
 		keyID     string

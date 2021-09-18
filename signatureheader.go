@@ -15,7 +15,7 @@ const (
 	signingHeaders                = "headers"
 )
 
-//SignatureHeader contains basic info signature header
+// SignatureHeader contains basic info signature header
 type SignatureHeader struct {
 	keyID     KeyID
 	headers   []string
@@ -23,7 +23,7 @@ type SignatureHeader struct {
 	algorithm string
 }
 
-//NewSignatureHeader new instace of SignatureHeader
+// NewSignatureHeader new instace of SignatureHeader
 func NewSignatureHeader(r *http.Request) (*SignatureHeader, error) {
 	return parseHTTPRequest(r)
 }
@@ -57,7 +57,8 @@ func parseSignatureString(s string) (*SignatureHeader, error) {
 	} else {
 		headers = strings.Split(headerString, " ")
 	}
-	algorithm, _ := results[signingAlgorithm]
+
+	algorithm := results[signingAlgorithm]
 
 	return &SignatureHeader{
 		keyID:     KeyID(keyID),

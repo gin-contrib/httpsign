@@ -50,7 +50,7 @@ func WithRequiredHeaders(headers []string) Option {
 // NewAuthenticator creates a new Authenticator instance with
 // given allowed permissions and required header and secret keys.
 func NewAuthenticator(secretKeys Secrets, options ...Option) *Authenticator {
-	var a = &Authenticator{secrets: secretKeys}
+	a := &Authenticator{secrets: secretKeys}
 
 	for _, fn := range options {
 		fn(a)
@@ -75,34 +75,34 @@ func (a *Authenticator) Authenticated() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		sigHeader, err := NewSignatureHeader(c.Request)
 		if err != nil {
-			c.AbortWithError(http.StatusUnauthorized, err)
+			_ = c.AbortWithError(http.StatusUnauthorized, err)
 			return
 		}
 		for _, v := range a.validators {
 			if err := v.Validate(c.Request); err != nil {
-				c.AbortWithError(http.StatusBadRequest, err)
+				_ = c.AbortWithError(http.StatusBadRequest, err)
 				return
 			}
 		}
 		if !a.isValidHeader(sigHeader.headers) {
-			c.AbortWithError(http.StatusBadRequest, ErrHeaderNotEnough)
+			_ = c.AbortWithError(http.StatusBadRequest, ErrHeaderNotEnough)
 			return
 		}
 
 		secret, err := a.getSecret(sigHeader.keyID, sigHeader.algorithm)
 		if err != nil {
-			c.AbortWithError(http.StatusBadRequest, err)
+			_ = c.AbortWithError(http.StatusBadRequest, err)
 			return
 		}
 		signString := constructSignMessage(c.Request, sigHeader.headers)
 		signature, err := secret.Algorithm.Sign(signString, secret.Key)
 		if err != nil {
-			c.AbortWithError(http.StatusInternalServerError, err)
+			_ = c.AbortWithError(http.StatusInternalServerError, err)
 			return
 		}
 		signatureBase64 := base64.StdEncoding.EncodeToString(signature)
 		if signatureBase64 != sigHeader.signature {
-			c.AbortWithError(http.StatusUnauthorized, ErrInvalidSign)
+			_ = c.AbortWithError(http.StatusUnauthorized, ErrInvalidSign)
 			return
 		}
 		c.Next()

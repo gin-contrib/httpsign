@@ -2,14 +2,15 @@ package httpsign
 
 import (
 	"fmt"
-	"github.com/gin-contrib/httpsign/crypto"
-	"github.com/gin-contrib/httpsign/validator"
 	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
 	"strings"
 	"testing"
 	"time"
+
+	"github.com/gin-contrib/httpsign/crypto"
+	"github.com/gin-contrib/httpsign/validator"
 
 	"github.com/stretchr/testify/require"
 
@@ -23,9 +24,7 @@ const (
 	writeID                = KeyID("write")
 	invalidKeyID           = KeyID("invalid key")
 	invaldAlgo             = "invalidAlgo"
-	invalidSignature       = "Invalid Signature"
 	requestNilBodySig      = "ewYjBILGshEmTDDMWLeBc9kQfIscSKxmFLnUBU/eXQCb0hrY1jh7U5SH41JmYowuA4p6+YPLcB9z/ay7OvG/Sg=="
-	requestBodyContent     = "hello world"
 	requestBodyDigest      = "SHA-256=uU0nuZNNPgilLlLX2n2r+sSE7+N6U4DukIj3rOLvzek="
 	requestBodyFalseDigest = "SHA-256=fakeDigest="
 	requestBodySig         = "s8MEyer3dSpSsnL0+mQvUYgKm2S4AEX+hsvKmeNI7wgtLFplbCZtt8YOcySZrCyYbOJdPF1NASDHfupSuekecg=="
@@ -169,6 +168,7 @@ func httpTestPost(c *gin.Context) {
 	}
 	c.Render(http.StatusOK, render.Data{Data: body})
 }
+
 func TestHttpInvalidRequest(t *testing.T) {
 	gin.SetMode(gin.TestMode)
 

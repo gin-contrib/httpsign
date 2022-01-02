@@ -95,7 +95,7 @@ func (p *parser) nextParam() (string, string, error) {
 }
 
 func (p *parser) parse() (map[string]string, error) {
-	var params = make(map[string]string)
+	params := make(map[string]string)
 
 	for {
 		key, val, err := p.nextParam()

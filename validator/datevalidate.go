@@ -3,9 +3,10 @@ package validator
 import (
 	"errors"
 	"fmt"
-	"github.com/gin-gonic/gin"
 	"net/http"
 	"time"
+
+	"github.com/gin-gonic/gin"
 )
 
 const maxTimeGap = 30 * time.Second // 30 secs
@@ -17,7 +18,7 @@ func newPublicError(msg string) *gin.Error {
 	}
 }
 
-//ErrDateNotInRange error when date not in aceptable range
+// ErrDateNotInRange error when date not in aceptable range
 var ErrDateNotInRange = newPublicError("Date submit is not in aceptable range")
 
 // DateValidator checking validate by time range

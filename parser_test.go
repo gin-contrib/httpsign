@@ -8,7 +8,7 @@ import (
 )
 
 func TestParser(t *testing.T) {
-	var tests = []struct {
+	tests := []struct {
 		name   string
 		input  string
 		params map[string]string

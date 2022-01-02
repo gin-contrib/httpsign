@@ -1,6 +1,7 @@
 package httpsign
 
 import (
+	"context"
 	"net/http"
 	"testing"
 
@@ -144,8 +145,7 @@ func TestFromSignatureString(t *testing.T) {
 	}
 
 	for _, tc := range tests {
-
-		r, err := http.NewRequest("GET", "/", nil)
+		r, err := http.NewRequestWithContext(context.Background(), "GET", "/", nil)
 		require.NoError(t, err, tc.name)
 		r.Header = tc.header
 

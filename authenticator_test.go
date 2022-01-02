@@ -1,6 +1,7 @@
 package httpsign
 
 import (
+	"context"
 	"fmt"
 	"io/ioutil"
 	"net/http"
@@ -48,7 +49,7 @@ var (
 	requiredHeaders = []string{"(request-target)", "date", "digest"}
 	submitHeader    = []string{"(request-target)", "date", "digest"}
 	submitHeader2   = []string{"(request-target)", "date", "digest", "host"}
-	requestTime     = time.Date(2018, time.October, 22, 07, 00, 07, 00, time.UTC)
+	requestTime     = time.Date(2018, time.October, 22, 0o7, 0o0, 0o7, 0o0, time.UTC)
 )
 
 func runTest(secretKeys Secrets, headers []string, v []validator.Validator, req *http.Request) *gin.Context {
@@ -68,7 +69,7 @@ func generateSignature(keyID KeyID, algorithm string, headers []string, signatur
 }
 
 func TestAuthenticatedHeaderNoSignature(t *testing.T) {
-	req, err := http.NewRequest("GET", "/", nil)
+	req, err := http.NewRequestWithContext(context.Background(), "GET", "/", nil)
 	require.NoError(t, err)
 	c := runTest(secrets, requiredHeaders, nil, req)
 	assert.Equal(t, http.StatusUnauthorized, c.Writer.Status())
@@ -76,7 +77,7 @@ func TestAuthenticatedHeaderNoSignature(t *testing.T) {
 }
 
 func TestAuthenticatedHeaderInvalidSignature(t *testing.T) {
-	req, err := http.NewRequest("GET", "/", nil)
+	req, err := http.NewRequestWithContext(context.Background(), "GET", "/", nil)
 	require.NoError(t, err)
 	req.Header.Set(authorizationHeader, "hello")
 	c := runTest(secrets, requiredHeaders, nil, req)
@@ -85,7 +86,7 @@ func TestAuthenticatedHeaderInvalidSignature(t *testing.T) {
 }
 
 func TestAuthenticatedHeaderWrongKey(t *testing.T) {
-	req, err := http.NewRequest("GET", "/", nil)
+	req, err := http.NewRequestWithContext(context.Background(), "GET", "/", nil)
 	require.NoError(t, err)
 	sigHeader := generateSignature(invalidKeyID, algoHmacSha512, submitHeader, requestNilBodySig)
 	req.Header.Set(authorizationHeader, sigHeader)
@@ -96,7 +97,7 @@ func TestAuthenticatedHeaderWrongKey(t *testing.T) {
 }
 
 func TestAuthenticateDateNotAccept(t *testing.T) {
-	req, err := http.NewRequest("GET", "/", nil)
+	req, err := http.NewRequestWithContext(context.Background(), "GET", "/", nil)
 	require.NoError(t, err)
 	sigHeader := generateSignature(readID, algoHmacSha512, submitHeader, requestNilBodySig)
 	req.Header.Set(authorizationHeader, sigHeader)
@@ -107,7 +108,7 @@ func TestAuthenticateDateNotAccept(t *testing.T) {
 }
 
 func TestAuthenticateInvalidRequiredHeader(t *testing.T) {
-	req, err := http.NewRequest("GET", "/", nil)
+	req, err := http.NewRequestWithContext(context.Background(), "GET", "/", nil)
 	require.NoError(t, err)
 	invalidRequiredHeaders := []string{"date"}
 	sigHeader := generateSignature(readID, algoHmacSha512, invalidRequiredHeaders, requestNilBodySig)
@@ -121,7 +122,7 @@ func TestAuthenticateInvalidRequiredHeader(t *testing.T) {
 }
 
 func TestAuthenticateInvalidAlgo(t *testing.T) {
-	req, err := http.NewRequest("GET", "/", nil)
+	req, err := http.NewRequestWithContext(context.Background(), "GET", "/", nil)
 	require.NoError(t, err)
 	sigHeader := generateSignature(readID, invaldAlgo, submitHeader, requestNilBodySig)
 	req.Header.Set(authorizationHeader, sigHeader)
@@ -133,7 +134,7 @@ func TestAuthenticateInvalidAlgo(t *testing.T) {
 }
 
 func TestInvalidSign(t *testing.T) {
-	req, err := http.NewRequest("GET", "/", nil)
+	req, err := http.NewRequestWithContext(context.Background(), "GET", "/", nil)
 	require.NoError(t, err)
 	sigHeader := generateSignature(readID, algoHmacSha512, submitHeader, requestNilBodySig)
 	req.Header.Set(authorizationHeader, sigHeader)
@@ -177,7 +178,7 @@ func TestHttpInvalidRequest(t *testing.T) {
 	r.Use(auth.Authenticated())
 	r.GET("/", httpTestGet)
 
-	req, err := http.NewRequest("GET", "/", nil)
+	req, err := http.NewRequestWithContext(context.Background(), "GET", "/", nil)
 	require.NoError(t, err)
 	sigHeader := generateSignature(readID, algoHmacSha512, submitHeader, requestBodySig)
 	req.Header.Set(authorizationHeader, sigHeader)
@@ -197,7 +198,7 @@ func TestHttpInvalidDigest(t *testing.T) {
 	r.Use(auth.Authenticated())
 	r.POST("/", httpTestPost)
 
-	req, err := http.NewRequest("POST", "/", strings.NewReader(sampleBodyContent))
+	req, err := http.NewRequestWithContext(context.Background(), "POST", "/", strings.NewReader(sampleBodyContent))
 	require.NoError(t, err)
 	sigHeader := generateSignature(readID, algoHmacSha512, submitHeader, requestBodySig)
 	req.Header.Set(authorizationHeader, sigHeader)
@@ -218,7 +219,7 @@ func TestHttpValidRequest(t *testing.T) {
 	r.Use(auth.Authenticated())
 	r.GET("/", httpTestGet)
 
-	req, err := http.NewRequest("GET", "/", nil)
+	req, err := http.NewRequestWithContext(context.Background(), "GET", "/", nil)
 	require.NoError(t, err)
 	sigHeader := generateSignature(readID, algoHmacSha512, submitHeader, requestNilBodySig)
 	req.Header.Set(authorizationHeader, sigHeader)
@@ -238,7 +239,7 @@ func TestHttpValidRequestBody(t *testing.T) {
 	r.Use(auth.Authenticated())
 	r.POST("/", httpTestPost)
 
-	req, err := http.NewRequest("POST", "/", strings.NewReader(sampleBodyContent))
+	req, err := http.NewRequestWithContext(context.Background(), "POST", "/", strings.NewReader(sampleBodyContent))
 	require.NoError(t, err)
 	sigHeader := generateSignature(readID, algoHmacSha512, submitHeader, requestBodySig)
 	req.Header.Set(authorizationHeader, sigHeader)
@@ -263,7 +264,7 @@ func TestHttpValidRequestHost(t *testing.T) {
 	r.POST("/", httpTestPost)
 
 	requestURL := fmt.Sprintf("http://%s/", requestHost)
-	req, err := http.NewRequest("POST", requestURL, strings.NewReader(sampleBodyContent))
+	req, err := http.NewRequestWithContext(context.Background(), "POST", requestURL, strings.NewReader(sampleBodyContent))
 	assert.NoError(t, err)
 	sigHeader := generateSignature(readID, algoHmacSha512, submitHeader2, requestHostSig)
 	req.Header.Set(authorizationHeader, sigHeader)

@@ -18,8 +18,8 @@ func newPublicError(msg string) *gin.Error {
 	}
 }
 
-// ErrDateNotInRange error when date not in aceptable range
-var ErrDateNotInRange = newPublicError("Date submit is not in aceptable range")
+// ErrDateNotInRange error when date not in acceptable range
+var ErrDateNotInRange = newPublicError("Date submit is not in acceptable range")
 
 // DateValidator checking validate by time range
 type DateValidator struct {

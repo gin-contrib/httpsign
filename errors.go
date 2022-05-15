@@ -22,7 +22,7 @@ var (
 	ErrDateNotFound = newPublicError("There is no Date on Headers")
 	// ErrIncorrectAlgorithm error when Algorithm in header does not match with secret key
 	ErrIncorrectAlgorithm = newPublicError("Algorithm does not match")
-	// ErrHeaderNotEnough error when requiremts header do not appear on heder field
+	// ErrHeaderNotEnough error when requirements header do not appear on header field
 	ErrHeaderNotEnough = newPublicError("Header field is not match requirement")
 	// ErrNoSignature error when no Signature not found in header
 	ErrNoSignature = newPublicError("No Signature header found in request")

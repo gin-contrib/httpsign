@@ -39,5 +39,17 @@ linters:
     - whitespace
     - gofumpt
 
+issues:
+  exclude-rules:
+    - path: authenticator_test.go
+      linters:
+        - bodyclose
+        - unparam
+    - path: parser_test.go
+      linters:
+        - lll
+    - path: signatureheader_test.go
+      linters:
+        - lll
 run:
   timeout: 3m

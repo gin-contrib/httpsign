@@ -23,7 +23,7 @@ type SignatureHeader struct {
 	algorithm string
 }
 
-// NewSignatureHeader new instace of SignatureHeader
+// NewSignatureHeader new instance of SignatureHeader
 func NewSignatureHeader(r *http.Request) (*SignatureHeader, error) {
 	return parseHTTPRequest(r)
 }

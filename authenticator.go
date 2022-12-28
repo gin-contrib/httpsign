@@ -91,6 +91,10 @@ func (a *Authenticator) Authenticated() gin.HandlerFunc {
 
 		secret, err := a.getSecret(sigHeader.keyID, sigHeader.algorithm)
 		if err != nil {
+			if err == ErrInvalidKeyID {
+				_ = c.AbortWithError(http.StatusUnauthorized, err)
+				return
+			}
 			_ = c.AbortWithError(http.StatusBadRequest, err)
 			return
 		}

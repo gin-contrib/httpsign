@@ -92,7 +92,7 @@ func TestAuthenticatedHeaderWrongKey(t *testing.T) {
 	req.Header.Set(authorizationHeader, sigHeader)
 	req.Header.Set("Date", time.Now().UTC().Format(http.TimeFormat))
 	c := runTest(secrets, requiredHeaders, nil, req)
-	assert.Equal(t, http.StatusBadRequest, c.Writer.Status())
+	assert.Equal(t, http.StatusUnauthorized, c.Writer.Status())
 	assert.Equal(t, ErrInvalidKeyID, c.Errors[0])
 }
 

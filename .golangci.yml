@@ -1,23 +1,18 @@
+version: "2"
 linters:
-  enable-all: false
-  disable-all: true
-  fast: false
+  default: none
   enable:
     - bodyclose
     - dogsled
     - dupl
     - errcheck
-    - exportloopref
     - exhaustive
     - gochecknoinits
     - goconst
     - gocritic
     - gocyclo
-    - gofmt
-    - goimports
     - goprintffuncname
     - gosec
-    - gosimple
     - govet
     - ineffassign
     - lll
@@ -27,25 +22,40 @@ linters:
     - nolintlint
     - rowserrcheck
     - staticcheck
-    - stylecheck
-    - typecheck
     - unconvert
     - unparam
     - unused
     - whitespace
+  exclusions:
+    generated: lax
+    presets:
+      - comments
+      - common-false-positives
+      - legacy
+      - std-error-handling
+    rules:
+      - linters:
+          - bodyclose
+          - unparam
+        path: authenticator_test.go
+      - linters:
+          - lll
+        path: parser_test.go
+      - linters:
+          - lll
+        path: signatureheader_test.go
+    paths:
+      - third_party$
+      - builtin$
+      - examples$
+formatters:
+  enable:
+    - gofmt
     - gofumpt
-
-issues:
-  exclude-rules:
-    - path: authenticator_test.go
-      linters:
-        - bodyclose
-        - unparam
-    - path: parser_test.go
-      linters:
-        - lll
-    - path: signatureheader_test.go
-      linters:
-        - lll
-run:
-  timeout: 3m
+    - goimports
+  exclusions:
+    generated: lax
+    paths:
+      - third_party$
+      - builtin$
+      - examples$

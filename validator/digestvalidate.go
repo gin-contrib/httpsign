@@ -6,7 +6,7 @@ import (
 	"encoding/base64"
 	"errors"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -46,11 +46,11 @@ func calculateDigest(r *http.Request) (string, error) {
 		return "", nil
 	}
 	// TODO: Read body using buffer to prevent using too much memory
-	body, err := ioutil.ReadAll(r.Body)
+	body, err := io.ReadAll(r.Body)
 	if err != nil {
 		return "", err
 	}
-	r.Body = ioutil.NopCloser(bytes.NewBuffer(body))
+	r.Body = io.NopCloser(bytes.NewBuffer(body))
 	h := sha256.New()
 	h.Write(body)
 	if err != nil {

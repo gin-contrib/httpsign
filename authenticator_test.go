@@ -3,7 +3,7 @@ package httpsign
 import (
 	"context"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"net/http"
 	"net/http/httptest"
 	"strings"
@@ -250,7 +250,7 @@ func TestHttpValidRequestBody(t *testing.T) {
 	r.ServeHTTP(w, req)
 
 	assert.Equal(t, http.StatusOK, w.Code)
-	body, err := ioutil.ReadAll(w.Result().Body)
+	body, err := io.ReadAll(w.Result().Body)
 	assert.NoError(t, err)
 	assert.Equal(t, body, []byte(sampleBodyContent))
 }
@@ -275,7 +275,7 @@ func TestHttpValidRequestHost(t *testing.T) {
 	r.ServeHTTP(w, req)
 
 	assert.Equal(t, http.StatusOK, w.Code)
-	body, err := ioutil.ReadAll(w.Result().Body)
+	body, err := io.ReadAll(w.Result().Body)
 	assert.NoError(t, err)
 	assert.Equal(t, body, []byte(sampleBodyContent))
 }

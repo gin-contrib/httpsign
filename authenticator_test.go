@@ -46,9 +46,9 @@ var (
 			Algorithm: hmacsha512,
 		},
 	}
-	requiredHeaders = []string{"(request-target)", "date", "digest"}
-	submitHeader    = []string{"(request-target)", "date", "digest"}
-	submitHeader2   = []string{"(request-target)", "date", "digest", "host"}
+	requiredHeaders = []string{requestTarget, date, digest}
+	submitHeader    = []string{requestTarget, date, digest}
+	submitHeader2   = []string{requestTarget, date, digest, "host"}
 	requestTime     = time.Date(2018, time.October, 22, 0o7, 0o0, 0o7, 0o0, time.UTC)
 )
 
@@ -110,7 +110,7 @@ func TestAuthenticateDateNotAccept(t *testing.T) {
 func TestAuthenticateInvalidRequiredHeader(t *testing.T) {
 	req, err := http.NewRequestWithContext(context.Background(), "GET", "/", nil)
 	require.NoError(t, err)
-	invalidRequiredHeaders := []string{"date"}
+	invalidRequiredHeaders := []string{date}
 	sigHeader := generateSignature(readID, algoHmacSha512, invalidRequiredHeaders, requestNilBodySig)
 	req.Header.Set(authorizationHeader, sigHeader)
 

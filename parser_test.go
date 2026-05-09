@@ -47,7 +47,7 @@ func TestParser(t *testing.T) {
 				"keyId":     "rsa-key-1",
 				"algorithm": "rsa-sha256",
 				"headers":   "(request-target) host date digest",
-				"signature": "70AaN3BDO0XC9QbtgksgCy2jJvmOvshq8VmjSthdXC+sgcgrKrl9WME4DbZv4W7UZKElvCemhDLHQ1Nln9GMkQ==",
+				"signature": sampleSignature,
 			},
 			err: nil,
 		},

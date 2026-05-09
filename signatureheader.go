@@ -53,7 +53,7 @@ func parseSignatureString(s string) (*SignatureHeader, error) {
 	headerString, ok := results[signingHeaders]
 	var headers []string
 	if !ok || len(headerString) == 0 {
-		headers = []string{"date"}
+		headers = []string{date}
 	} else {
 		headers = strings.Split(headerString, " ")
 	}

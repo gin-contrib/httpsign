@@ -3,7 +3,7 @@
 [![Run Tests](https://github.com/gin-contrib/httpsign/actions/workflows/go.yml/badge.svg)](https://github.com/gin-contrib/httpsign/actions/workflows/go.yml)
 [![Trivy Security Scan](https://github.com/gin-contrib/httpsign/actions/workflows/trivy-scan.yml/badge.svg)](https://github.com/gin-contrib/httpsign/actions/workflows/trivy-scan.yml)
 [![codecov](https://codecov.io/gh/gin-contrib/httpsign/branch/master/graph/badge.svg)](https://codecov.io/gh/gin-contrib/httpsign)
-[![GoDoc](https://godoc.org/github.com/gin-contrib/httpsign?status.svg)](https://godoc.org/github.com/gin-contrib/httpsign)
+[![Go Reference](https://pkg.go.dev/badge/github.com/gin-contrib/httpsign.svg)](https://pkg.go.dev/github.com/gin-contrib/httpsign)
 
 Signing HTTP Messages Middleware base on [HTTP Signatures](https://tools.ietf.org/html/draft-cavage-http-signatures).
 

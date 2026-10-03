@@ -8,6 +8,7 @@ import (
 	"strings"
 
 	"github.com/gin-contrib/httpsign/validator"
+
 	"github.com/gin-gonic/gin"
 )
 
@@ -117,13 +118,14 @@ func (a *Authenticator) Authenticated() gin.HandlerFunc {
 func (a *Authenticator) isValidHeader(headers []string) bool {
 	m := len(headers)
 	for _, h := range a.headers {
-		i := 0
-		for i = 0; i < m; i++ {
+		found := false
+		for i := range m {
 			if h == headers[i] {
+				found = true
 				break
 			}
 		}
-		if i == m {
+		if !found {
 			return false
 		}
 	}

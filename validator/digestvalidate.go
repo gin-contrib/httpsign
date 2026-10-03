@@ -5,7 +5,6 @@ import (
 	"crypto/sha256"
 	"encoding/base64"
 	"errors"
-	"fmt"
 	"io"
 	"net/http"
 
@@ -53,9 +52,6 @@ func calculateDigest(r *http.Request) (string, error) {
 	r.Body = io.NopCloser(bytes.NewBuffer(body))
 	h := sha256.New()
 	h.Write(body)
-	if err != nil {
-		return "", err
-	}
-	digest := fmt.Sprintf("SHA-256=%s", base64.StdEncoding.EncodeToString(h.Sum(nil)))
+	digest := "SHA-256=" + base64.StdEncoding.EncodeToString(h.Sum(nil))
 	return digest, nil
 }

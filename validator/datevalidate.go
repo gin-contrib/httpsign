@@ -2,7 +2,6 @@ package validator
 
 import (
 	"errors"
-	"fmt"
 	"net/http"
 	"time"
 
@@ -39,7 +38,7 @@ func NewDateValidator() *DateValidator {
 func (v *DateValidator) Validate(r *http.Request) error {
 	t, err := http.ParseTime(r.Header.Get("date"))
 	if err != nil {
-		return newPublicError(fmt.Sprintf("Could not parse date header. Error: %s", err.Error()))
+		return newPublicError("Could not parse date header. Error: " + err.Error())
 	}
 	serverTime := time.Now()
 	start := serverTime.Add(-v.TimeGap)

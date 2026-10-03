@@ -43,9 +43,11 @@ func TestFromSignatureString(t *testing.T) {
 			err:    ErrNoSignature,
 		},
 		{
-			name:   `Authorization Signature invalid begin`,
-			header: newAuthorizationHeader(`notASignature keyId="sample_key_id",algorithm="hmac-sha512",headers="(request-target) date digest",signature="70AaN3BDO0XC9QbtgksgCy2jJvmOvshq8VmjSthdXC+sgcgrKrl9WME4DbZv4W7UZKElvCemhDLHQ1Nln9GMkQ=="`),
-			err:    ErrInvalidAuthorizationHeader,
+			name: `Authorization Signature invalid begin`,
+			header: newAuthorizationHeader(
+				`notASignature keyId="sample_key_id",algorithm="hmac-sha512",headers="(request-target) date digest",signature="70AaN3BDO0XC9QbtgksgCy2jJvmOvshq8VmjSthdXC+sgcgrKrl9WME4DbZv4W7UZKElvCemhDLHQ1Nln9GMkQ=="`,
+			),
+			err: ErrInvalidAuthorizationHeader,
 		},
 		{
 			name:   `Authorization Signature invalid key pair format`,
@@ -53,18 +55,24 @@ func TestFromSignatureString(t *testing.T) {
 			err:    ErrUnterminatedParameter,
 		},
 		{
-			name:   `Authorization Signature missing keyId`,
-			header: newAuthorizationHeader(`Signature algorithm="hmac-sha512",headers="",signature="70AaN3BDO0XC9QbtgksgCy2jJvmOvshq8VmjSthdXC+sgcgrKrl9WME4DbZv4W7UZKElvCemhDLHQ1Nln9GMkQ=="`),
-			err:    ErrMissingKeyID,
+			name: `Authorization Signature missing keyId`,
+			header: newAuthorizationHeader(
+				`Signature algorithm="hmac-sha512",headers="",signature="70AaN3BDO0XC9QbtgksgCy2jJvmOvshq8VmjSthdXC+sgcgrKrl9WME4DbZv4W7UZKElvCemhDLHQ1Nln9GMkQ=="`,
+			),
+			err: ErrMissingKeyID,
 		},
 		{
-			name:   `Authorization Signature missing signature`,
-			header: newAuthorizationHeader(`Signature keyId="sample_key_id",algorithm="hmac-sha512",headers=""`),
-			err:    ErrMissingSignature,
+			name: `Authorization Signature missing signature`,
+			header: newAuthorizationHeader(
+				`Signature keyId="sample_key_id",algorithm="hmac-sha512",headers=""`,
+			),
+			err: ErrMissingSignature,
 		},
 		{
-			name:      `Authorization Signature header empty`,
-			header:    newAuthorizationHeader(`Signature keyId="sample_key_id",algorithm="hmac-sha512",headers="",signature="70AaN3BDO0XC9QbtgksgCy2jJvmOvshq8VmjSthdXC+sgcgrKrl9WME4DbZv4W7UZKElvCemhDLHQ1Nln9GMkQ=="`),
+			name: `Authorization Signature header empty`,
+			header: newAuthorizationHeader(
+				`Signature keyId="sample_key_id",algorithm="hmac-sha512",headers="",signature="70AaN3BDO0XC9QbtgksgCy2jJvmOvshq8VmjSthdXC+sgcgrKrl9WME4DbZv4W7UZKElvCemhDLHQ1Nln9GMkQ=="`,
+			),
 			err:       nil,
 			keyID:     sampleKeyID,
 			algorithm: algoHmacSha512,
@@ -72,8 +80,10 @@ func TestFromSignatureString(t *testing.T) {
 			signature: sampleSignature,
 		},
 		{
-			name:      `Authorization Signature missing headers`,
-			header:    newAuthorizationHeader(`Signature keyId="sample_key_id",algorithm="hmac-sha512",signature="70AaN3BDO0XC9QbtgksgCy2jJvmOvshq8VmjSthdXC+sgcgrKrl9WME4DbZv4W7UZKElvCemhDLHQ1Nln9GMkQ=="`),
+			name: `Authorization Signature missing headers`,
+			header: newAuthorizationHeader(
+				`Signature keyId="sample_key_id",algorithm="hmac-sha512",signature="70AaN3BDO0XC9QbtgksgCy2jJvmOvshq8VmjSthdXC+sgcgrKrl9WME4DbZv4W7UZKElvCemhDLHQ1Nln9GMkQ=="`,
+			),
 			err:       nil,
 			keyID:     sampleKeyID,
 			algorithm: algoHmacSha512,
@@ -81,8 +91,10 @@ func TestFromSignatureString(t *testing.T) {
 			signature: sampleSignature,
 		},
 		{
-			name:      `Authorization Normal case`,
-			header:    newAuthorizationHeader(`Signature keyId="sample_key_id",algorithm="hmac-sha512",headers="(request-target) date digest",signature="70AaN3BDO0XC9QbtgksgCy2jJvmOvshq8VmjSthdXC+sgcgrKrl9WME4DbZv4W7UZKElvCemhDLHQ1Nln9GMkQ=="`),
+			name: `Authorization Normal case`,
+			header: newAuthorizationHeader(
+				`Signature keyId="sample_key_id",algorithm="hmac-sha512",headers="(request-target) date digest",signature="70AaN3BDO0XC9QbtgksgCy2jJvmOvshq8VmjSthdXC+sgcgrKrl9WME4DbZv4W7UZKElvCemhDLHQ1Nln9GMkQ=="`,
+			),
 			err:       nil,
 			keyID:     sampleKeyID,
 			algorithm: algoHmacSha512,
@@ -90,8 +102,10 @@ func TestFromSignatureString(t *testing.T) {
 			signature: sampleSignature,
 		},
 		{
-			name:      `Authorization Repeated params`,
-			header:    newAuthorizationHeader(`Signature keyId="sample_key_id",algorithm="hmac-sha512",headers="(request-target) date digest",signature="70AaN3BDO0XC9QbtgksgCy2jJvmOvshq8VmjSthdXC+sgcgrKrl9WME4DbZv4W7UZKElvCemhDLHQ1Nln9GMkQ==",keyId="sample_key_id_2"`),
+			name: `Authorization Repeated params`,
+			header: newAuthorizationHeader(
+				`Signature keyId="sample_key_id",algorithm="hmac-sha512",headers="(request-target) date digest",signature="70AaN3BDO0XC9QbtgksgCy2jJvmOvshq8VmjSthdXC+sgcgrKrl9WME4DbZv4W7UZKElvCemhDLHQ1Nln9GMkQ==",keyId="sample_key_id_2"`,
+			),
 			err:       nil,
 			keyID:     "sample_key_id_2",
 			algorithm: "hmac-sha512",
@@ -99,9 +113,11 @@ func TestFromSignatureString(t *testing.T) {
 			signature: sampleSignature,
 		},
 		{
-			name:   `Signature missing keyId`,
-			header: newSignatureHeader(`algorithm="hmac-sha512",headers="",signature="70AaN3BDO0XC9QbtgksgCy2jJvmOvshq8VmjSthdXC+sgcgrKrl9WME4DbZv4W7UZKElvCemhDLHQ1Nln9GMkQ=="`),
-			err:    ErrMissingKeyID,
+			name: `Signature missing keyId`,
+			header: newSignatureHeader(
+				`algorithm="hmac-sha512",headers="",signature="70AaN3BDO0XC9QbtgksgCy2jJvmOvshq8VmjSthdXC+sgcgrKrl9WME4DbZv4W7UZKElvCemhDLHQ1Nln9GMkQ=="`,
+			),
+			err: ErrMissingKeyID,
 		},
 		{
 			name:   `Signature missing signature`,
@@ -109,8 +125,10 @@ func TestFromSignatureString(t *testing.T) {
 			err:    ErrMissingSignature,
 		},
 		{
-			name:      `Signature header empty`,
-			header:    newSignatureHeader(`keyId="sample_key_id",algorithm="hmac-sha512",headers="",signature="70AaN3BDO0XC9QbtgksgCy2jJvmOvshq8VmjSthdXC+sgcgrKrl9WME4DbZv4W7UZKElvCemhDLHQ1Nln9GMkQ=="`),
+			name: `Signature header empty`,
+			header: newSignatureHeader(
+				`keyId="sample_key_id",algorithm="hmac-sha512",headers="",signature="70AaN3BDO0XC9QbtgksgCy2jJvmOvshq8VmjSthdXC+sgcgrKrl9WME4DbZv4W7UZKElvCemhDLHQ1Nln9GMkQ=="`,
+			),
 			err:       nil,
 			keyID:     sampleKeyID,
 			algorithm: algoHmacSha512,
@@ -118,8 +136,10 @@ func TestFromSignatureString(t *testing.T) {
 			signature: sampleSignature,
 		},
 		{
-			name:      `Signature missing headers`,
-			header:    newSignatureHeader(`keyId="sample_key_id",algorithm="hmac-sha512",signature="70AaN3BDO0XC9QbtgksgCy2jJvmOvshq8VmjSthdXC+sgcgrKrl9WME4DbZv4W7UZKElvCemhDLHQ1Nln9GMkQ=="`),
+			name: `Signature missing headers`,
+			header: newSignatureHeader(
+				`keyId="sample_key_id",algorithm="hmac-sha512",signature="70AaN3BDO0XC9QbtgksgCy2jJvmOvshq8VmjSthdXC+sgcgrKrl9WME4DbZv4W7UZKElvCemhDLHQ1Nln9GMkQ=="`,
+			),
 			err:       nil,
 			keyID:     sampleKeyID,
 			algorithm: algoHmacSha512,
@@ -127,8 +147,10 @@ func TestFromSignatureString(t *testing.T) {
 			signature: sampleSignature,
 		},
 		{
-			name:      `Normal case`,
-			header:    newSignatureHeader(`keyId="sample_key_id",algorithm="hmac-sha512",headers="(request-target) date digest",signature="70AaN3BDO0XC9QbtgksgCy2jJvmOvshq8VmjSthdXC+sgcgrKrl9WME4DbZv4W7UZKElvCemhDLHQ1Nln9GMkQ=="`),
+			name: `Normal case`,
+			header: newSignatureHeader(
+				`keyId="sample_key_id",algorithm="hmac-sha512",headers="(request-target) date digest",signature="70AaN3BDO0XC9QbtgksgCy2jJvmOvshq8VmjSthdXC+sgcgrKrl9WME4DbZv4W7UZKElvCemhDLHQ1Nln9GMkQ=="`,
+			),
 			err:       nil,
 			keyID:     sampleKeyID,
 			algorithm: algoHmacSha512,
@@ -136,8 +158,10 @@ func TestFromSignatureString(t *testing.T) {
 			signature: sampleSignature,
 		},
 		{
-			name:      `Repeated params`,
-			header:    newSignatureHeader(`keyId="sample_key_id",algorithm="hmac-sha512",headers="(request-target) date digest",signature="70AaN3BDO0XC9QbtgksgCy2jJvmOvshq8VmjSthdXC+sgcgrKrl9WME4DbZv4W7UZKElvCemhDLHQ1Nln9GMkQ==",keyId="sample_key_id_2"`),
+			name: `Repeated params`,
+			header: newSignatureHeader(
+				`keyId="sample_key_id",algorithm="hmac-sha512",headers="(request-target) date digest",signature="70AaN3BDO0XC9QbtgksgCy2jJvmOvshq8VmjSthdXC+sgcgrKrl9WME4DbZv4W7UZKElvCemhDLHQ1Nln9GMkQ==",keyId="sample_key_id_2"`,
+			),
 			err:       nil,
 			keyID:     "sample_key_id_2",
 			algorithm: "hmac-sha512",
@@ -147,7 +171,7 @@ func TestFromSignatureString(t *testing.T) {
 	}
 
 	for _, tc := range tests {
-		r, err := http.NewRequestWithContext(context.Background(), "GET", "/", nil)
+		r, err := http.NewRequestWithContext(context.Background(), http.MethodGet, "/", nil)
 		require.NoError(t, err, tc.name)
 		r.Header = tc.header
 

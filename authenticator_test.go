@@ -2,6 +2,7 @@ package httpsign
 
 import (
 	"context"
+	"encoding/base64"
 	"fmt"
 	"io"
 	"net/http"
@@ -305,4 +306,135 @@ func TestHttpValidRequestHost(t *testing.T) {
 	body, err := io.ReadAll(w.Result().Body)
 	require.NoError(t, err)
 	assert.Equal(t, body, []byte(sampleBodyContent))
+}
+
+func TestConstructSignMessageRepeatedHeaders(t *testing.T) {
+	tests := []struct {
+		name   string
+		values []string
+		want   string
+	}{
+		{name: "missing", want: ""},
+		{name: "single", values: []string{"max-age=60"}, want: "max-age=60"},
+		{
+			name:   "repeated",
+			values: []string{"max-age=60", "must-revalidate"},
+			want:   "max-age=60, must-revalidate",
+		},
+		{
+			name:   "reversed",
+			values: []string{"must-revalidate", "max-age=60"},
+			want:   "must-revalidate, max-age=60",
+		},
+		{
+			name:   "combined",
+			values: []string{"max-age=60, must-revalidate"},
+			want:   "max-age=60, must-revalidate",
+		},
+		{
+			name:   "three values",
+			values: []string{"first", "second", "third"},
+			want:   "first, second, third",
+		},
+		{name: "empty first", values: []string{"", "second"}, want: ", second"},
+		{name: "empty last", values: []string{"first", ""}, want: "first, "},
+		{
+			name:   "quoted comma",
+			values: []string{`first="a,b"`, "second"},
+			want:   `first="a,b", second`,
+		},
+	}
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			req := httptest.NewRequest(http.MethodGet, "http://example.org/foo?bar=baz", nil)
+			for _, value := range tc.values {
+				req.Header.Add("Cache-Control", value)
+			}
+			req.Header.Set("X-Other", "kept")
+			message := constructSignMessage(
+				req,
+				[]string{requestTarget, host, "cache-control", "x-other"},
+			)
+			want := "(request-target): get /foo?bar=baz\nhost: example.org\ncache-control: " + tc.want + "\nx-other: kept"
+			assert.Equal(t, want, message)
+			assert.Equal(t, tc.values, req.Header.Values("Cache-Control"))
+		})
+	}
+}
+
+func TestHttpRepeatedSignatureHeaders(t *testing.T) {
+	gin.SetMode(gin.TestMode)
+	headers := []string{requestTarget, date, digest, "cache-control"}
+	router := gin.New()
+	auth := NewAuthenticator(secrets, WithRequiredHeaders(headers))
+	router.Use(auth.Authenticated())
+	router.GET("/foo", func(c *gin.Context) { c.Status(http.StatusNoContent) })
+	server := httptest.NewServer(router)
+	defer server.Close()
+
+	tests := []struct {
+		name   string
+		values []string
+		signed string
+	}{
+		{name: "single", values: []string{"max-age=60"}, signed: "max-age=60"},
+		{
+			name:   "combined",
+			values: []string{"max-age=60, must-revalidate"},
+			signed: "max-age=60, must-revalidate",
+		},
+		{
+			name:   "repeated",
+			values: []string{"max-age=60", "must-revalidate"},
+			signed: "max-age=60, must-revalidate",
+		},
+		{
+			name:   "reversed",
+			values: []string{"must-revalidate", "max-age=60"},
+			signed: "must-revalidate, max-age=60",
+		},
+		{
+			name:   "three values",
+			values: []string{"first", "second", "third"},
+			signed: "first, second, third",
+		},
+		{
+			name:   "quoted comma",
+			values: []string{`first="a,b"`, "second"},
+			signed: `first="a,b", second`,
+		},
+	}
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			req, err := http.NewRequestWithContext(
+				t.Context(),
+				http.MethodGet,
+				server.URL+"/foo?bar=baz",
+				nil,
+			)
+			require.NoError(t, err)
+			for _, value := range tc.values {
+				req.Header.Add("Cache-Control", value)
+			}
+			dateValue := time.Now().UTC().Format(http.TimeFormat)
+			req.Header.Set("Date", dateValue)
+			message := "(request-target): get /foo?bar=baz\ndate: " + dateValue + "\ndigest: \ncache-control: " + tc.signed
+			signature, err := hmacsha512.Sign(message, secrets[readID].Key)
+			require.NoError(t, err)
+			req.Header.Set(
+				authorizationHeader,
+				generateSignature(
+					readID,
+					algoHmacSha512,
+					headers,
+					base64.StdEncoding.EncodeToString(signature),
+				),
+			)
+
+			response, err := server.Client().Do(req)
+			require.NoError(t, err)
+			defer response.Body.Close()
+			assert.Equal(t, http.StatusNoContent, response.StatusCode)
+		})
+	}
 }

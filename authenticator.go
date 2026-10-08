@@ -156,7 +156,7 @@ func constructSignMessage(r *http.Request, headers []string) string {
 		case requestTarget:
 			fieldValue = fmt.Sprintf("%s %s", strings.ToLower(r.Method), r.URL.RequestURI())
 		default:
-			fieldValue = r.Header.Get(field)
+			fieldValue = strings.Join(r.Header.Values(field), ", ")
 		}
 		signString := fmt.Sprintf("%s: %s", field, fieldValue)
 		signBuffer.WriteString(signString)

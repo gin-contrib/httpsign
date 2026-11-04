@@ -2,6 +2,7 @@ package httpsign
 
 import (
 	"bytes"
+	"errors"
 	"io"
 )
 
@@ -99,7 +100,7 @@ func (p *parser) parse() (map[string]string, error) {
 
 	for {
 		key, val, err := p.nextParam()
-		if err == io.EOF {
+		if errors.Is(err, io.EOF) {
 			return params, nil
 		} else if err != nil {
 			return nil, err

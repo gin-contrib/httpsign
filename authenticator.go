@@ -3,8 +3,10 @@ package httpsign
 import (
 	"bytes"
 	"encoding/base64"
+	"errors"
 	"fmt"
 	"net/http"
+	"slices"
 	"strings"
 
 	"github.com/gin-contrib/httpsign/validator"
@@ -92,7 +94,7 @@ func (a *Authenticator) Authenticated() gin.HandlerFunc {
 
 		secret, err := a.getSecret(sigHeader.keyID, sigHeader.algorithm)
 		if err != nil {
-			if err == ErrInvalidKeyID {
+			if errors.Is(err, ErrInvalidKeyID) {
 				_ = c.AbortWithError(http.StatusUnauthorized, err)
 				return
 			}
@@ -116,16 +118,8 @@ func (a *Authenticator) Authenticated() gin.HandlerFunc {
 
 // isValidHeader check if all server required header is in header list
 func (a *Authenticator) isValidHeader(headers []string) bool {
-	m := len(headers)
 	for _, h := range a.headers {
-		found := false
-		for i := range m {
-			if h == headers[i] {
-				found = true
-				break
-			}
-		}
-		if !found {
+		if !slices.Contains(headers, h) {
 			return false
 		}
 	}

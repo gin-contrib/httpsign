@@ -76,10 +76,11 @@ func getSignatureString(r *http.Request) (string, error) {
 
 	s = r.Header.Get(authorizationHeader)
 	if s != "" {
-		if strings.Index(s, authorizationHeaderInitString) != 0 {
+		value, found := strings.CutPrefix(s, authorizationHeaderInitString)
+		if !found {
 			return "", ErrInvalidAuthorizationHeader
 		}
-		return strings.TrimPrefix(s, authorizationHeaderInitString), nil
+		return value, nil
 	}
 
 	return "", ErrNoSignature
